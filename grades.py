@@ -5,7 +5,7 @@ import re
 
 FILENAME = 'grades.pdf'
 URL = input('url: ')
-# URL = 'http://outof7.nisa.edu.kz/parentsportal/gradebook_app.cfm?id=80177941'
+# URL = 'http://outof7.nisa.edu.kz/parentsportal/gradebook_app.cfm?id=12345678'
 
 system('cls')
 print('creating file...', end='\r')

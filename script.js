@@ -4,8 +4,6 @@ import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
 
 const dropZone = document.getElementById('dropZone');
-const gradesTableBody = document.querySelector('#gradesTable tbody');
-
 
 dropZone.addEventListener('dragover', (e) => {
     e.preventDefault(); // Prevent the default behavior of opening the file
@@ -46,6 +44,7 @@ async function processPdf(file) {
                 // Extract grades from the current page
                 extractGrades(pageText);
             }
+            makeChart()
         } catch (error) {
             console.error('Error loading PDF: ', error);
         }
@@ -54,30 +53,111 @@ async function processPdf(file) {
     fileReader.readAsArrayBuffer(file);
 }
 
+
+const grades = {}
 // Extract grades using regex
 function extractGrades(text) {
-    //const regex = /(.*) *\n[\S\s]*[12][A-G][ \n]*(.*)[\S\s]*KZ\n([\n\/\d%]*)%\n[\S\s]*Grade\n(\/[\n\/\d%]*)%\n[\S\s]*Grade\n([\d\n ]*)\n[\S\s]*/;
-    const regex = /(.*?) 2[\S\s]*[12][A-G] (.*?) -/
+    const regex = /(.*?) \d[\S\s]*[12][A-G] (.*?) - (.*?)  Assessments: [\S\s]*Semester grade ([\d\/ ]*)?([\S ]*)?%   IB *KZ ([\d\/ %]*)?[A-Za-z ]*(\/[\d\/ %]*)?[A-Za-z ]*([\d ]*)[\S\s]*Absence (.*)[\d]+ /
     const match = text.match(regex);
     console.log(text)
 
     if (match) {
-        //const [_, name, subject, g1, g2, g3] = match;
-        const [_, name, subject] = match
-        displayGrades(name, subject);
+        const [_, name, subject, teacher, dates, names, fmax, smax, rawgrades, attendance] = match
+        const totalGrade = rawgrades.trim().split(/\s+/).slice(-3);
+        console.log(rawgrades)
+        if (totalGrade[0]) {
+            grades[subject] = parseInt(totalGrade[0], 10)
+        }
+        
     } else {
         console.warn(text)
         console.warn('No grades found in the extracted text.');
     }
 }
+// Get the canvas element
+const ctx = document.getElementById('gradesChart').getContext('2d');
+let gradesChart = null;
+function makeChart() {
+    if (gradesChart) {
+        gradesChart.destroy()
+    }
 
-// Display grades in the table
-function displayGrades(name, subject) {
-    const row = gradesTableBody.insertRow();
+    // Convert to sorted arrays in one step
+    const sortedEntries = Object.entries(grades)
+    .sort(([, gradeA], [, gradeB]) => gradeB - gradeA); // Sort by grade (descending)
 
-    row.insertCell(0).textContent = name;
-    row.insertCell(1).textContent = subject;
-    // row.insertCell(1).textContent = formativeGrades;
-    // row.insertCell(2).textContent = summativeGrades;
-    // row.insertCell(3).textContent = totalGrade;
+    // Extract sorted labels and grades
+    const sortedLabels = sortedEntries.map(([subject]) => subject);
+    const sortedGrades = sortedEntries.map(([, grade]) => grade);
+
+    gradesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+        labels: sortedLabels,
+        datasets: [{
+            label: 'Grades (%)',
+            data: sortedGrades,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1,
+        }]
+        },
+        options: {
+        scales: {
+            y: {
+            beginAtZero: true,
+            max: 100,
+            },
+        },
+        plugins: {
+            annotation: {
+            annotations: {
+                line7: {
+                type: 'line',
+                yMin: 84, // Draw a horizontal line at y = 84
+                yMax: 84,
+                borderColor: 'blue', // Line color
+                borderWidth: 1,
+                label: {
+                    content: '7', // Label text
+                    enabled: true,
+                    position: 'end', // Position of the label
+                    backgroundColor: 'red', // Label background color
+                    color: 'white', // Label text color
+                },
+                },
+                line6: {
+                type: 'line',
+                yMin: 67, // Draw a horizontal line at y = 67
+                yMax: 67,
+                borderColor: 'blue', // Line color
+                borderWidth: 1,
+                label: {
+                    content: '6', // Label text
+                    enabled: true,
+                    position: 'end', // Position of the label
+                    backgroundColor: 'green', // Label background color
+                    color: 'white', // Label text color
+                },
+                },
+                line5: {
+                type: 'line',
+                yMin: 54, // Draw a horizontal line at y = 67
+                yMax: 54,
+                borderColor: 'blue', // Line color
+                borderWidth: 1,
+                label: {
+                    content: '5', // Label text
+                    enabled: true,
+                    position: 'end', // Position of the label
+                    backgroundColor: 'green', // Label background color
+                    color: 'white', // Label text color
+                },
+                },
+            },
+            },
+        },
+        responsive: true,
+        },
+    });
 }

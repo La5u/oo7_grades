@@ -3,30 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Grade Extractor</title>
+    <title>PDF Grade analyzer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>PDF Grade Extractor</h1>
-        <div id="dropZone">
-            <p>Drag and drop your PDF file here</p>
-        </div>
-        <table id="gradesTable">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Subject</th>
-                    <th>Formative Grades</th>
-                    <th>Summative Grades</th>
-                    <th>Total Grade</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Rows will be inserted here by JavaScript -->
-            </tbody>
-        </table>
+    <h1>PDF Grade analyzer</h1>
+    <div id="dropZone">
+        <p>Drag and drop your PDF file here</p>
     </div>
+    <canvas id="gradesChart" width="400" height="200"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@latest/dist/chartjs-plugin-annotation.min.js"></script>
     <script src="script.js" type="module"></script>
 </body>
 </html>

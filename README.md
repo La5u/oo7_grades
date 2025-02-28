@@ -4,4 +4,4 @@ this is a program to get scrape grades and output only the numbers in a better f
 Site:\
 https://la5u.github.io/oo7_grades
 \
-this is for converting the pdf file into a table for easy reading on website
+this is for converting the pdf file into a chart for seeing which subjects youre LACKING

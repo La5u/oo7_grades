@@ -4,11 +4,6 @@ body {
     margin: 20px;
 }
 
-.container {
-    max-width: 800px;
-    margin: auto;
-}
-
 #dropZone {
     border: 2px dashed #ccc;
     padding: 20px;
@@ -20,20 +15,4 @@ body {
 #dropZone.dragover {
     border-color: #000;
     background-color: #f9f9f9;
-}
-
-table {
-    width: 100%;
-    margin-top: 20px;
-    border-collapse: collapse;
-}
-
-th, td {
-    text-align: left;
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-    background-color: #f2f2f2;
 }
